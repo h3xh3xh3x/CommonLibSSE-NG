@@ -179,6 +179,29 @@ namespace REL
 		return static_cast<std::size_t>(it->offset);
 	}
 
+	std::optional<std::size_t> IDDB::try_id2offset(std::uint64_t a_id) const noexcept
+	{
+		if (_loadedFormat == Format::SSEv5) {
+			if (a_id >= _id2offsetDense.size() || _id2offsetDense[a_id] == 0) {
+				return std::nullopt;
+			}
+			return static_cast<std::size_t>(_id2offsetDense[a_id]);
+		}
+
+		mapping_t  elem{ a_id, 0 };
+		const auto it = std::lower_bound(
+			_id2offset.begin(),
+			_id2offset.end(),
+			elem,
+			[](auto&& a_lhs, auto&& a_rhs) {
+				return a_lhs.id < a_rhs.id;
+			});
+		if (it == _id2offset.end() || it->id != a_id) {
+			return std::nullopt;
+		}
+		return static_cast<std::size_t>(it->offset);
+	}
+
 	bool IDDB::load_file(stl::zwstring a_filename, Version a_version, std::optional<std::uint8_t> a_expectedFormat, bool a_failOnError)
 	{
 		try {

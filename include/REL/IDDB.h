@@ -133,6 +133,9 @@ namespace REL
 
 		[[nodiscard]] std::size_t id2offset(std::uint64_t a_id) const;
 
+		// Non-fatal lookup: returns std::nullopt when the id is absent instead of calling report_and_fail.
+		[[nodiscard]] std::optional<std::size_t> try_id2offset(std::uint64_t a_id) const noexcept;
+
 #ifdef ENABLE_SKYRIM_VR
 		bool IsVRAddressLibraryAtLeastVersion(const char* a_minimalVRAddressLibVersion, bool a_reportAndFail = false) const;
 #endif
